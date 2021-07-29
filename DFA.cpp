@@ -1,215 +1,290 @@
 #include<bits/stdc++.h>
-#include<cstdlib>
 using namespace std;
-typedef struct node{
-char s1,s2;
-struct node *next;
-}node;
-//function to display dependent list
-void dispadj(node adj[],int l){
-for(int i=0;i<l;i++){
-    node *temp = adj[i].next;
-    cout<<"("<<adj[i].s1<<","<<adj[i].s2<<")";
-    while(temp!=NULL){
-        cout<<"->"<<"("<<temp->s1<<","<<temp->s2<<")";
-        temp = temp->next;
-    }cout<<endl;
-}
-}
-//function to return first element of queue
-int firstOne(pair<int, int> p)
-{
-    int f = p.first;
-    int s = p.second;
-    return f*100+s;
-}
-int main(){
-    int n;
-    cout<<"enter number of states in DFA:";
-    cin>>n;
-    int mat[n-1][n-1];
-    for(int i=0;i<n-1;i++){
-        for(int j=0;j<n-1;j++){
-            mat[i][j]=0;
-        }
-    }
-    //0-> Equivalent states; 1-> Distinguishable states.
-    char delta[n][3];
-    cout<<"enter transition function of DFA in terms of A....Z\n";
-    for(int i=0;i<n;i++){
-        cin>>delta[i][0]>>delta[i][1]>>delta[i][2];
-    }
-    int f;
-    cout<<"enter no:of final states:";
-    cin>>f;
-    cout<<"enter the final state(s):\n";
-    char fina[f];
-    for(int i=0;i<f;i++){
-        cin>>fina[i];
-    }
-    //matrix initialization
-    for(int i=0;i<f;i++){
-        int j = fina[i]-'A';
-        for(int y=j;y<n-1;y++){
-            mat[y][j]=1;
-        }
-        for(int k=0;k<j;k++){
-            mat[fina[i]-'A'-1][k]=1;
-        }
-    }
-    for(int i=0;i<f;i++){
-        for(int j=i+1;j<f;j++){
-            mat[fina[j]-'A'-1][fina[i]-'A']=0;
-        }
-    }
 
-  char x,y,t;
-     node adj[n*(n-1)/2];
-    queue < pair<char, char> > q;int found=0;
-    int i=0,j=1;
-    //dependent list creation
-    for(int i1=0;i1<n*(n-1)/2;i1++){
-        if(j==n){
-            i++;
-            j=i+1;
-        }
-        adj[i1].s1='A'+i;
-        adj[i1].s2='A'+j;
-        adj[i1].next = NULL;
-        j++;
+int precedence(char x){
+    switch(x){
+        case '+': return 3;
+        case '&': return 2;
+        case '|': return 1;
+        default : return 0;
     }
-    for(int i=0;i<n;i++){
-        for(int j=i+1;j<n;j++){
-        if(delta[i][1]!=delta[j][1] ){
-        x = delta[i][1];
-        y = delta[j][1];
-        if(x>y) {
-            t= x;
-            x = y;
-            y =t;
-        }
-            if(!(x==delta[i][0] && y==delta[j][0])){
-           node *nn = (node *)malloc(sizeof(node));
-
-           nn->next=NULL;
-           nn->s1 = delta[i][0];
-           nn->s2 = delta[j][0];
-           nn->next = adj[n*(n-1)/2 - ('A'+n-1-x)*('A'+n-x)/2 + (y-x-1)].next;
-           adj[n*(n-1)/2 - ('A'+n-1-x)*('A'+n-x)/2 + (y-x-1)].next = nn;
-        }
-        }
-        if(delta[i][2]!=delta[j][2] ){
-        x = delta[i][2];
-        y = delta[j][2];
-        if(x>y) {
-            t= x;
-            x = y;
-            y =t;
-        }
-        if(!(x==delta[i][0] && y==delta[j][0])){
-           node *nn = (node *)malloc(sizeof(node));
-           nn->next=NULL;
-           nn->s1 = delta[i][0];
-           nn->s2 = delta[j][0];
-           nn->next = adj[n*(n-1)/2 - ('A'+n-1-x)*('A'+n-x)/2 + (y-x-1)].next;
-           adj[n*(n-1)/2 - ('A'+n-1-x)*('A'+n-x)/2 + (y-x-1)].next = nn;
-        }
-        }
+}
+int steps = 1;
+class DFA{
+    public:
+    unordered_map<string,vector<unordered_set<string>>> transitions;
+    string start;
+    unordered_set<string> accept;
+    DFA(unordered_map<string,vector<unordered_set<string>>> transitions,string start,unordered_set<string> accept):
+    transitions(transitions),start(start),accept(accept){}
+};
+class NNFA{
+    public:
+    unordered_map<string,vector<unordered_set<string>>> transitions;
+    string start;
+    unordered_set<string> accept;
+    NNFA(unordered_map<string,vector<unordered_set<string>>> transitions,string start,unordered_set<string> accept):
+    transitions(transitions),start(start),accept(accept){}
+    DFA toDFA(){
     }
+};
+class NFA{
+    public:
+    unordered_map<string,vector<unordered_set<string>>> transitions;
+    string start;
+    unordered_set<string> accept;
+    NFA(unordered_map<string,vector<unordered_set<string>>> transitions,string start,unordered_set<string> accept):
+    transitions(transitions),start(start),accept(accept){}
+    NFA operator ||(const NFA &b){
+        unordered_map<string,vector<unordered_set<string>>> t;
+        
+        t.insert((this->transitions).begin(),(this->transitions).end());
+        t.insert((b.transitions).begin(),(b.transitions).end());
+        vector<unordered_set<string>> vec(27,unordered_set<string>());
+        unordered_set<string> next;next.insert(this->start);next.insert(b.start);
+        vec[0] = next;
+        t[to_string(steps)+"Q1"] = vec;
+        
+        unordered_set<string> a;
+        a.insert((this->accept).begin(),(this->accept).end());
+        a.insert((b.accept).begin(),(b.accept).end());
+        NFA newNFA(t,to_string(steps)+"Q1",a);
+        steps++;
+        return newNFA;
     }
-
-    //queue initialization
-    pair<char,char> temp;
-    for(int i=0;i<n-1;i++){
-        for(int j=0;j<n-1;j++){
-            if(mat[i][j]==1){
-                 x = 'A'+1+i;
-                 y = 'A'+j;
-                if(x>y){
-                    t=x;
-                    x=y;
-                    y=t;
+    NFA operator &&(const NFA &b){
+        unordered_map<string,vector<unordered_set<string>>> t;
+        unordered_set<string> a;
+        a.insert(b.accept.begin(),b.accept.end());
+        t.insert((this->transitions).begin(),(this->transitions).end());
+        t.insert((b.transitions).begin(),(b.transitions).end());
+        for(auto itr = (this->accept).begin();itr!=(this->accept).end();itr++){
+            string curr = *itr;
+            vector<unordered_set<string>> temp1(27,unordered_set<string>());
+            t[curr] = temp1;
+            t[curr][0].insert(b.start);
+        }
+        NFA newNFA(t,this->start,a);
+        return newNFA;
+    }
+    NFA operator ++(int){
+        unordered_map<string,vector<unordered_set<string>>> t;
+        unordered_set<string> a;
+        a.insert((this->accept).begin(),(this->accept).end());
+        a.insert(to_string(steps)+"Q1");
+        t.insert((this->transitions).begin(),(this->transitions).end());
+        vector<unordered_set<string>> temp1(27,unordered_set<string>());
+        t[to_string(steps)+"Q1"] = temp1;
+        t[to_string(steps)+"Q1"][0].insert(this->start);
+        for(auto itr = (this->accept).begin();itr!=(this->accept).end();itr++){
+            t[*itr][0].insert(this->start);
+        }
+        NFA newNFA(t,to_string(steps)+"Q1",a);
+        steps++;
+        return newNFA;
+    }
+    NNFA toNNFA(){
+        //compute epsilon closure
+        unordered_map<string,unordered_set<string>> closure;
+        for(auto itr = transitions.begin();itr!=transitions.end();itr++){
+            queue<string> q;
+            unordered_map<string,bool> visit;
+            for(auto it = transitions.begin();it!=transitions.end();it++){
+                visit[it->first] = false;
+            }
+            q.push(itr->first);
+            visit[itr->first]=true;
+            string curr;
+            unordered_set<string> temp;
+            temp.insert(itr->first);
+            while(q.empty()==false){
+                curr = q.front();
+                for(auto it = transitions[curr][0].begin();it!=transitions[curr][0].end();it++){
+                    if(visit[*it]==false){
+                        temp.insert(*it);
+                        visit[*it] = true;
+                        q.push(*it);
+                    }   
                 }
-                temp.first = x;
-                temp.second = y;
-                q.push(temp);
+                q.pop();
             }
+            closure[itr->first] = temp;
+        }
+        cout<<"epsilon closure"<<endl;
+        for(auto itr = closure.begin();itr!=closure.end();itr++){
+            cout<<itr->first<<"->";
+            for(auto it = (itr->second).begin();it!=(itr->second).end();it++){
+                cout<<(*it)<<" ";
+            }cout<<endl;
+        }
+        unordered_map<string,vector<unordered_set<string>>> t;
+        for(auto itr = transitions.begin();itr!=transitions.end();itr++){
+            string curr = itr->first;
+            unordered_set<string> currClosure= closure[curr];
+            vector<unordered_set<string>> apply1(26,unordered_set<string>());
+            for(auto it = currClosure.begin();it!=currClosure.end();it++){
+                for(int i=0;i<26;i++){
+                    apply1[i].insert(transitions[*it][i+1].begin(),transitions[*it][i+1].end());
+                }
+            }
+            vector<unordered_set<string>> apply2(26,unordered_set<string>());
+            for(int i=0;i<26;i++){
+                for(auto it=apply1[i].begin();it!=apply1[i].end();it++){
+                    apply2[i].insert(closure[*it].begin(),closure[*it].end());
+                }
+            }
+            t[curr] = apply2;
+        }
+        //print NFA
+        cout<<"NFA"<<endl;
+        for(auto itr = t.begin();itr!=t.end();itr++){
+            cout<<itr->first<<"->";
+            for(int i=0;i<26;i++){
+                cout<<i<<"{";
+                for(auto it = (itr->second)[i].begin();it!=(itr->second)[i].end();it++){
+                    cout<<(*it)<<",";
+                }cout<<"}";
+            }cout<<endl;
+        }
+        //start state
+        string currStart = this->start;
+        unordered_set<string> currFinal;
+        //final states
 
+        unordered_set<string> totFinalClosure;
+        for(auto itr = accept.begin();itr!=accept.end();itr++){
+            totFinalClosure.insert(closure[*itr].begin(),closure[*itr].end());
         }
-    }
-    node *nxt;
-    char a,b;
-    int ab;
-    //processing queue
-    while(q.empty()==0){
-        ab = firstOne(q.front());
-        a = ab/100;
-        b = ab%100;
-        temp.first = a;
-        temp.second = b;
-        nxt = adj[n*(n-1)/2 - ('A'+n-1-temp.first)*('A'+n-temp.first)/2 + (temp.second-temp.first-1)].next;
-        while(nxt!=NULL){
-        if(mat[nxt->s2-'A'-1][nxt->s1-'A']==0){
-            mat[nxt->s2-'A'-1][nxt->s1-'A']=1;
-            temp.first = nxt->s1;
-            temp.second = nxt->s2;
-            q.push(temp);
-        }
-        nxt = nxt->next;
-        }
-        q.pop();
-    }
-    int equicount=0;
-    vector< pair< char , char > > equi;
-    for(int i=0;i<n;i++){
-            temp.second = temp.first = i+'A';
-            equi.push_back(temp);
-
-    }
-    for(int i=0;i<n-1;i++){
-        for(int j=0;j<=i;j++){
-            if(mat[i][j]==0){
-                equi[i+1].second = j+'A';
-                equi[j].second = i+1+'A';
-                equicount++;
+        unordered_set<string> finalStates;
+        for(auto itr = closure.begin();itr!=closure.end();itr++){
+            for(auto it = (itr->second).begin();it!=(itr->second).end();it++){
+                if(totFinalClosure.find(*it)!=totFinalClosure.end()){
+                    finalStates.insert(itr->first);
+                    break;
+                }
             }
         }
-
+        cout<<"final states";
+        for(auto itr=finalStates.begin();itr!=finalStates.end();itr++){
+            cout<<(*itr)<<" ";
+        }
+        return NNFA(t,currStart,finalStates);
     }
-    int v[n];
-    for(int i=0;i<n;i++){
-        v[i]=INT_MAX;
-    }
-    int k=0;
-
-    for(int i=0;i<n;i++){
-        if(v[equi[i].first-'A']==INT_MAX){
-            v[equi[i].first-'A']=k;
-            j= equi[i].second-'A';
-            while(v[j]==INT_MAX){
-                v[j]=k;
-                j=equi[j].second-'A';
+    void print(){
+        cout<<"start state: "<<this->start<<endl<<"final state(s): ";
+        for(auto itr = (this->accept).begin();itr!=(this->accept).end();itr++){
+            cout<<*itr<<" ";
+        }cout<<endl;
+        for(auto itr = (this->transitions).begin();itr!=(this->transitions).end();itr++){
+            cout<<(itr->first)<<" ";
+            for(int i=0;i<27;i++){
+                cout<<i<<"{";
+                for(auto it = (itr->second)[i].begin();it!=(itr->second)[i].end();it++){
+                    cout<<(*it)<<",";
+                }
+                cout<<"} ";
             }
-            k++;
+            cout<<endl;
         }
     }
-
-        int visit[k]={0};
-    char minidelta[k][3];
-    int k1=0;
-    //populate the new transition table
-    for(int i=0;i<n;i++){
-        if(visit[v[delta[i][0]-'A']]==0){
-            minidelta[k1][0] = 'A'+v[delta[i][0]-'A'];
-            minidelta[k1][1] = 'A'+v[delta[i][1]-'A'];
-            minidelta[k1][2] = 'A'+v[delta[i][2]-'A'];
-            visit[v[delta[i][0]-'A']]=1;
-            k1++;
+};
+string inToPost(string re){
+    string result = "";
+    stack<char> s;
+    for(int i=0;i<re.length();i++){
+        if(re[i]>='a' && re[i]<='z' || re[i]=='P' || re[i]=='E')result+=re[i];
+        else if(re[i]=='(')s.push(re[i]);
+        else if(re[i]==')'){
+            while(s.top()!='('){
+                result+=s.top();
+                s.pop();
+            }s.pop();
+        }else if(s.empty()==true || s.top()=='('){
+            s.push(re[i]);
+        }else if(precedence(re[i])>precedence(s.top())){
+            s.push(re[i]);
+        }else{
+            while(s.empty()==false && precedence(re[i])<precedence(s.top())){
+                result+=s.top();
+                s.pop();
+            }s.push(re[i]);
         }
     }
-    cout<<"Minimized DFA:"<<endl;
-    cout<<"|minidelta|0|1|"<<endl;
-    for(int i=0;i<k;i++){
-        cout<<"     "<<minidelta[i][0]<<"     "<<minidelta[i][1]<<" "<<minidelta[i][2]<<endl;
+    while(!s.empty()){
+        result+=s.top();
+        s.pop();
     }
+    return result;
+}
+NFA create(char a){
+    if(a=='E'){  
+        unordered_map<string,vector<unordered_set<string>>> t;
+        t[to_string(steps)+"Q1"] = vector<unordered_set<string>> (27);
+        unordered_set<string> s;
+        s.insert(to_string(steps)+"Q1");
+        NFA newNFA(t,to_string(steps)+"Q1",s);
+        steps++;
+        return newNFA;
+    }else if(a=='P'){
+        
+        unordered_map<string,vector<unordered_set<string>>> t;
+        t[to_string(steps)+"Q1"] = vector<unordered_set<string>> (27);
+        unordered_set<string> s;
+        NFA newNFA(t,to_string(steps)+"Q1",s);
+        steps++;
+        return  newNFA;
+    }else if(a>='a' && a<='z'){
+        
+        unordered_map<string,vector<unordered_set<string>>> t;
+        t[to_string(steps)+"Q1"] = vector<unordered_set<string>> (27);
+        t[to_string(steps)+"Q2"] = vector<unordered_set<string>> (27);
+        t[to_string(steps)+"Q1"][a-'a'+1].insert(to_string(steps)+"Q2");
+        unordered_set<string> s;s.insert(to_string(steps)+"Q2");
+        NFA newNFA(t,to_string(steps)+"Q1",s);
+        steps++;
+        return  newNFA;
+    }
+};
+int main(){
+    //P: phi and E:epsilon
+    cout<<"the regular expression must confirm to following rules:"
+          "\n P denotes Phi"
+          "\n E denotes epsilon"
+          "\n alphabet: a to z"
+          "\n Operators on regular expressions:"
+          "\n 1. re1 | re2 denotes re1 or re2"
+          "\n 2. re1 & re2 denotes re1 concatenated with re2"
+          "\n 3. re+ denotes zero or more occurances of re\n";
+    cout<<"enter regular expression:";
+    string re;
+    cin>>re;
+    string modified = inToPost(re);
+    cout<<modified<<endl;
+    stack<NFA> s;
+    for(int i=0;i<modified.length();i++){
+        if(modified[i]>='a' && modified[i]<='z' || modified[i]=='P' || modified[i]=='E'){
+            s.push(create(modified[i]));
+        }else if(modified[i]=='&'){
+            NFA n1 = s.top();
+            s.pop();
+            NFA n2 = s.top();
+            s.pop();
+            s.push(n1&&n2);
+        }else if(modified[i]=='|'){
+            NFA n1 = s.top();
+            s.pop();
+            NFA n2 = s.top();
+            s.pop();
+            s.push(n1||n2);
+        }else if(modified[i]=='+'){
+            NFA n1 = s.top();
+            s.pop();
+            s.push(n1++);
+        }
+    }
+    NFA result = s.top();
+    s.pop();
+    cout<<"verify:"<<(s.empty()==true)<<endl;
+    result.print();
+    NNFA nnfa = result.toNNFA();
 }
