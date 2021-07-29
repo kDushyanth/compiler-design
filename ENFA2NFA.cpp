@@ -10,6 +10,14 @@ int precedence(char x){
     }
 }
 int steps = 1;
+class NNFA{
+    public:
+    unordered_map<string,vector<unordered_set<string>>> transitions;
+    string start;
+    unordered_set<string> accept;
+    NNFA(unordered_map<string,vector<unordered_set<string>>> transitions,string start,unordered_set<string> accept):
+    transitions(transitions),start(start),accept(accept){}
+};
 class NFA{
     public:
     unordered_map<string,vector<unordered_set<string>>> transitions;
@@ -64,6 +72,93 @@ class NFA{
         NFA newNFA(t,to_string(steps)+"Q1",a);
         steps++;
         return newNFA;
+    }
+    NNFA toNNFA(){
+        //compute epsilon closure
+        unordered_map<string,unordered_set<string>> closure;
+        for(auto itr = transitions.begin();itr!=transitions.end();itr++){
+            queue<string> q;
+            unordered_map<string,bool> visit;
+            for(auto it = transitions.begin();it!=transitions.end();it++){
+                visit[it->first] = false;
+            }
+            q.push(itr->first);
+            visit[itr->first]=true;
+            string curr;
+            unordered_set<string> temp;
+            temp.insert(itr->first);
+            while(q.empty()==false){
+                curr = q.front();
+                for(auto it = transitions[curr][0].begin();it!=transitions[curr][0].end();it++){
+                    if(visit[*it]==false){
+                        temp.insert(*it);
+                        visit[*it] = true;
+                        q.push(*it);
+                    }   
+                }
+                q.pop();
+            }
+            closure[itr->first] = temp;
+        }
+        cout<<"epsilon closure"<<endl;
+        for(auto itr = closure.begin();itr!=closure.end();itr++){
+            cout<<itr->first<<"->";
+            for(auto it = (itr->second).begin();it!=(itr->second).end();it++){
+                cout<<(*it)<<" ";
+            }cout<<endl;
+        }
+        unordered_map<string,vector<unordered_set<string>>> t;
+        for(auto itr = transitions.begin();itr!=transitions.end();itr++){
+            string curr = itr->first;
+            unordered_set<string> currClosure= closure[curr];
+            vector<unordered_set<string>> apply1(26,unordered_set<string>());
+            for(auto it = currClosure.begin();it!=currClosure.end();it++){
+                for(int i=0;i<26;i++){
+                    apply1[i].insert(transitions[*it][i+1].begin(),transitions[*it][i+1].end());
+                }
+            }
+            vector<unordered_set<string>> apply2(26,unordered_set<string>());
+            for(int i=0;i<26;i++){
+                for(auto it=apply1[i].begin();it!=apply1[i].end();it++){
+                    apply2[i].insert(closure[*it].begin(),closure[*it].end());
+                }
+            }
+            t[curr] = apply2;
+        }
+        //print NFA
+        cout<<"NFA"<<endl;
+        for(auto itr = t.begin();itr!=t.end();itr++){
+            cout<<itr->first<<"->";
+            for(int i=0;i<26;i++){
+                cout<<i<<"{";
+                for(auto it = (itr->second)[i].begin();it!=(itr->second)[i].end();it++){
+                    cout<<(*it)<<",";
+                }cout<<"}";
+            }cout<<endl;
+        }
+        //start state
+        string currStart = this->start;
+        unordered_set<string> currFinal;
+        //final states
+
+        unordered_set<string> totFinalClosure;
+        for(auto itr = accept.begin();itr!=accept.end();itr++){
+            totFinalClosure.insert(closure[*itr].begin(),closure[*itr].end());
+        }
+        unordered_set<string> finalStates;
+        for(auto itr = closure.begin();itr!=closure.end();itr++){
+            for(auto it = (itr->second).begin();it!=(itr->second).end();it++){
+                if(totFinalClosure.find(*it)!=totFinalClosure.end()){
+                    finalStates.insert(itr->first);
+                    break;
+                }
+            }
+        }
+        cout<<"final states";
+        for(auto itr=finalStates.begin();itr!=finalStates.end();itr++){
+            cout<<(*itr)<<" ";
+        }
+        return NNFA(t,currStart,finalStates);
     }
     void print(){
         cout<<"start state: "<<this->start<<endl<<"final state(s): ";
@@ -181,4 +276,5 @@ int main(){
     s.pop();
     cout<<"verify:"<<(s.empty()==true)<<endl;
     result.print();
+    NNFA nnfa = result.toNNFA();
 }
