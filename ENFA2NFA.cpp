@@ -10,14 +10,6 @@ int precedence(char x){
     }
 }
 int steps = 1;
-class NNFA{
-    public:
-    unordered_map<string,vector<unordered_set<string>>> transitions;
-    string start;
-    unordered_set<string> accept;
-    NNFA(unordered_map<string,vector<unordered_set<string>>> transitions,string start,unordered_set<string> accept):
-    transitions(transitions),start(start),accept(accept){}
-};
 class NFA{
     public:
     unordered_map<string,vector<unordered_set<string>>> transitions;
@@ -25,7 +17,15 @@ class NFA{
     unordered_set<string> accept;
     NFA(unordered_map<string,vector<unordered_set<string>>> transitions,string start,unordered_set<string> accept):
     transitions(transitions),start(start),accept(accept){}
-    NFA operator ||(const NFA &b){
+};
+class ENFA{
+    public:
+    unordered_map<string,vector<unordered_set<string>>> transitions;
+    string start;
+    unordered_set<string> accept;
+    ENFA(unordered_map<string,vector<unordered_set<string>>> transitions,string start,unordered_set<string> accept):
+    transitions(transitions),start(start),accept(accept){}
+    ENFA operator ||(const ENFA &b){
         unordered_map<string,vector<unordered_set<string>>> t;
         
         t.insert((this->transitions).begin(),(this->transitions).end());
@@ -38,11 +38,11 @@ class NFA{
         unordered_set<string> a;
         a.insert((this->accept).begin(),(this->accept).end());
         a.insert((b.accept).begin(),(b.accept).end());
-        NFA newNFA(t,to_string(steps)+"Q1",a);
+        ENFA newENFA(t,to_string(steps)+"Q1",a);
         steps++;
-        return newNFA;
+        return newENFA;
     }
-    NFA operator &&(const NFA &b){
+    ENFA operator &&(const ENFA &b){
         unordered_map<string,vector<unordered_set<string>>> t;
         unordered_set<string> a;
         a.insert(b.accept.begin(),b.accept.end());
@@ -50,14 +50,14 @@ class NFA{
         t.insert((b.transitions).begin(),(b.transitions).end());
         for(auto itr = (this->accept).begin();itr!=(this->accept).end();itr++){
             string curr = *itr;
-            vector<unordered_set<string>> temp1(27,unordered_set<string>());
-            t[curr] = temp1;
+            //vector<unordered_set<string>> temp1(27,unordered_set<string>());
+            //t[curr] = temp1;
             t[curr][0].insert(b.start);
         }
-        NFA newNFA(t,this->start,a);
-        return newNFA;
+        ENFA newENFA(t,this->start,a);
+        return newENFA;
     }
-    NFA operator ++(int){
+    ENFA operator ++(int){
         unordered_map<string,vector<unordered_set<string>>> t;
         unordered_set<string> a;
         a.insert((this->accept).begin(),(this->accept).end());
@@ -69,11 +69,11 @@ class NFA{
         for(auto itr = (this->accept).begin();itr!=(this->accept).end();itr++){
             t[*itr][0].insert(this->start);
         }
-        NFA newNFA(t,to_string(steps)+"Q1",a);
+        ENFA newENFA(t,to_string(steps)+"Q1",a);
         steps++;
-        return newNFA;
+        return newENFA;
     }
-    NNFA toNNFA(){
+    NFA toNFA(){
         //compute epsilon closure
         unordered_map<string,unordered_set<string>> closure;
         for(auto itr = transitions.begin();itr!=transitions.end();itr++){
@@ -100,7 +100,7 @@ class NFA{
             }
             closure[itr->first] = temp;
         }
-        cout<<"epsilon closure"<<endl;
+        cout<<"-------------------------epsilon closure-------------------------"<<endl;
         for(auto itr = closure.begin();itr!=closure.end();itr++){
             cout<<itr->first<<"->";
             for(auto it = (itr->second).begin();it!=(itr->second).end();it++){
@@ -126,18 +126,20 @@ class NFA{
             t[curr] = apply2;
         }
         //print NFA
-        cout<<"NFA"<<endl;
+        cout<<"-------------------------------NFA-------------------------------"<<endl;
+        cout<<"transition function:"<<endl;
         for(auto itr = t.begin();itr!=t.end();itr++){
             cout<<itr->first<<"->";
             for(int i=0;i<26;i++){
-                cout<<i<<"{";
+                cout<<(char(i+97))<<":{";
                 for(auto it = (itr->second)[i].begin();it!=(itr->second)[i].end();it++){
                     cout<<(*it)<<",";
-                }cout<<"}";
+                }cout<<"} ";
             }cout<<endl;
         }
         //start state
         string currStart = this->start;
+        cout<<"start state: "<<currStart<<endl;
         unordered_set<string> currFinal;
         //final states
 
@@ -154,23 +156,26 @@ class NFA{
                 }
             }
         }
-        cout<<"final states";
+        cout<<"final state(s): ";
         for(auto itr=finalStates.begin();itr!=finalStates.end();itr++){
             cout<<(*itr)<<" ";
         }
-        return NNFA(t,currStart,finalStates);
+        return NFA(t,currStart,finalStates);
     }
     void print(){
+        cout<<"------------------------------ENFA------------------------------"<<endl;
         cout<<"start state: "<<this->start<<endl<<"final state(s): ";
         for(auto itr = (this->accept).begin();itr!=(this->accept).end();itr++){
             cout<<*itr<<" ";
         }cout<<endl;
+        cout<<"transition function:\n";
         for(auto itr = (this->transitions).begin();itr!=(this->transitions).end();itr++){
-            cout<<(itr->first)<<" ";
+            cout<<(itr->first)<<"->";
             for(int i=0;i<27;i++){
-                cout<<i<<"{";
+                if(i!=0)cout<<(char(96+i))<<":{";
+                else cout<<"E:{";
                 for(auto it = (itr->second)[i].begin();it!=(itr->second)[i].end();it++){
-                    cout<<(*it)<<",";
+                   cout<<(*it)<<",";
                 }
                 cout<<"} ";
             }
@@ -206,23 +211,23 @@ string inToPost(string re){
     }
     return result;
 }
-NFA create(char a){
+ENFA create(char a){
     if(a=='E'){  
         unordered_map<string,vector<unordered_set<string>>> t;
         t[to_string(steps)+"Q1"] = vector<unordered_set<string>> (27);
         unordered_set<string> s;
         s.insert(to_string(steps)+"Q1");
-        NFA newNFA(t,to_string(steps)+"Q1",s);
+        ENFA newENFA(t,to_string(steps)+"Q1",s);
         steps++;
-        return newNFA;
+        return newENFA;
     }else if(a=='P'){
         
         unordered_map<string,vector<unordered_set<string>>> t;
         t[to_string(steps)+"Q1"] = vector<unordered_set<string>> (27);
         unordered_set<string> s;
-        NFA newNFA(t,to_string(steps)+"Q1",s);
+        ENFA newENFA(t,to_string(steps)+"Q1",s);
         steps++;
-        return  newNFA;
+        return  newENFA;
     }else if(a>='a' && a<='z'){
         
         unordered_map<string,vector<unordered_set<string>>> t;
@@ -230,9 +235,9 @@ NFA create(char a){
         t[to_string(steps)+"Q2"] = vector<unordered_set<string>> (27);
         t[to_string(steps)+"Q1"][a-'a'+1].insert(to_string(steps)+"Q2");
         unordered_set<string> s;s.insert(to_string(steps)+"Q2");
-        NFA newNFA(t,to_string(steps)+"Q1",s);
+        ENFA newENFA(t,to_string(steps)+"Q1",s);
         steps++;
-        return  newNFA;
+        return  newENFA;
     }
 };
 int main(){
@@ -250,31 +255,31 @@ int main(){
     cin>>re;
     string modified = inToPost(re);
     cout<<modified<<endl;
-    stack<NFA> s;
+    stack<ENFA> s;
     for(int i=0;i<modified.length();i++){
         if(modified[i]>='a' && modified[i]<='z' || modified[i]=='P' || modified[i]=='E'){
             s.push(create(modified[i]));
         }else if(modified[i]=='&'){
-            NFA n1 = s.top();
+            ENFA n1 = s.top();
             s.pop();
-            NFA n2 = s.top();
+            ENFA n2 = s.top();
             s.pop();
-            s.push(n1&&n2);
+            s.push(n2&&n1);
         }else if(modified[i]=='|'){
-            NFA n1 = s.top();
+            ENFA n1 = s.top();
             s.pop();
-            NFA n2 = s.top();
+            ENFA n2 = s.top();
             s.pop();
             s.push(n1||n2);
         }else if(modified[i]=='+'){
-            NFA n1 = s.top();
+            ENFA n1 = s.top();
             s.pop();
             s.push(n1++);
         }
     }
-    NFA result = s.top();
+    ENFA result = s.top();
     s.pop();
     cout<<"verify:"<<(s.empty()==true)<<endl;
     result.print();
-    NNFA nnfa = result.toNNFA();
+    NFA nfa = result.toNFA();
 }
