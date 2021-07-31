@@ -1,0 +1,23 @@
+Steps to run the program:(on windows)
+    1. g++ RE2NFA.cpp
+    2. a.exe
+    
+The program can take Regular expression with atmost 26 elements in its alphabet.
+A MACRO named 'COUNT' is defined in the program that specifies the number of elements in the alphabet.
+
+Operations:
+    1. '|' : denotes union of two regular expressions e.g a|b
+    2. '&' : denotes concatenation of two regular expressions e.g a&b
+    3. '+' : denotes one or more occurances of a regular expression e.g a+
+
+Sample inputs:
+1. P (denotes phi)
+2. E (denotes epsilon)
+3. a|b
+4. a&b
+5. a+
+6. regular expression for even length strings of a,b: ((a|b)&(a|b))+
+7. (a&b+a)+
+8. (a|b)+
+
+example program outputs are in 'examples.docx' file
