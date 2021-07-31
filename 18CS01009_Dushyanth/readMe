@@ -1,8 +1,9 @@
+
 Steps to run the program:(on windows)
     1. g++ RE2NFA.cpp
     2. a.exe
     
-The program can take Regular expression with atmost 26 elements in its alphabet.
+RE2NFA.cpp: The program can take Regular expression with atmost 26 elements in its alphabet.
 A MACRO named 'COUNT' is defined in the program that specifies the number of elements in the alphabet.
 
 Operations:
@@ -21,3 +22,10 @@ Sample inputs:
 8. (a|b)+
 
 example program outputs are in 'examples.docx' file
+
+DFAmin.cpp: program to minimize a DFA
+
+Input format: first enter number of states in dfa. After, enter the transition function as
+A B C - which denotes A to B when '0' and A to C when '1'
+alphabet of DFA-{0,1}
+The program outputs the transition function of minimized DFA.
