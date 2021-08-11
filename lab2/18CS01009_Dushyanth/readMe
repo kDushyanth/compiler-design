@@ -1,0 +1,22 @@
+Steps to execute the program:
+1.  g++ LexicalAnalyzer.cpp
+2.  a.exe
+
+There are 7 functions IF,THEN,ELSE,NUMBER,ID,WS,RELOP corresponding to if,then,else,number,identifier,whitespaces,relational operators respectively.
+These functions denote the transition diagrams for each token type except 'WS', which is used to handle the whitespaces in a statement.
+
+To identify tokens correctly, a preference order is followed:
+(top to bottom ==> decreasing preference)
+1. IF
+2. ELSE
+3. THEN
+4. RELOP
+5. ID
+6. NUMBER
+The input is sent sequentially through above 6 functions until a token is recognized.
+If none of the 6 functions recognize a token at current index then the input will contain a invalid token entered(e.g. 123.45.6E-9).
+In this case a 'invalid input'-message is printed to the terminal.
+
+The transition diagrams are implemented using 'switch' and a state variable.
+
+The outputs for sample input are in 'examples.docx' file.

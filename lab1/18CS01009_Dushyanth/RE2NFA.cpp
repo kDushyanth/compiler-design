@@ -2,7 +2,7 @@
 using namespace std;
 
 //a macro to define number of elements in regular expressions's alphabet.
-#define COUNT 2
+#define COUNT 3
 
 //precedence of regular expression operations
 int precedence(char x){
