@@ -1,0 +1,7 @@
+input to the program should be written in 'myfile' file in same directory
+Steps to execute the program:
+1. flex q3.l
+2. gcc lex.yy.c
+3. a.exe
+
+sample inputs and outputs are shown in 'examples.docx' with screen shots, and explanation

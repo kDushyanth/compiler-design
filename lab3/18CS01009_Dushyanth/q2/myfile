@@ -1,0 +1,1 @@
+if input<10.24E-12 then output1=100 else output2>=100
