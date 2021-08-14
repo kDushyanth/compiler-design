@@ -1,4 +1,4 @@
-pattern (0|(1(01*0)*1))*
+pattern   (0|(1(01*0)*1))*
 %%
 {pattern} {printf("accepted\n");return 1;}
 .*        {printf("rejected\n");return 0;}
