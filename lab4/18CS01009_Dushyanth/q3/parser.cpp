@@ -12,6 +12,10 @@ bool F(map<char,set<string>> productions,string str,int &curr);
 void printer(char T,string str,int curr){
     cout<<T<<" "<<(str.insert(curr,"|"))<<endl;
 }
+bool isTerminal(char ch){
+    return (ch>='a' && ch<='z');
+}
+//functions for each non-terminal in grammar
 bool E(map<char,set<string>> productions,string str,int &curr){
     //Sleep(2000);
     int t = curr;
@@ -177,7 +181,7 @@ bool F(map<char,set<string>> productions,string str,int &curr){
                 case 'S':found = S(productions,str,curr);break;
                 case 'F':found = F(productions,str,curr);break;
                 case '$':found = (curr==str.length());break;
-                default :/*cout<<x<<" "<<curr<<"f"<<endl;*/found = (curr!=str.length() && str[curr]==y);if(str[curr]==y)curr++;
+                default :/*cout<<x<<" "<<curr<<"f"<<endl;*/found = (curr!=str.length() &&(str[curr]==y || (y=='i' && isTerminal(str[curr]))));if(str[curr]==y  || (y=='i' && isTerminal(str[curr])))curr++;
             }
             if(found==false){
                 break;
@@ -193,7 +197,9 @@ bool F(map<char,set<string>> productions,string str,int &curr){
 }
 int main(){
     string str;
+    cout<<"enter a string:";
     cin>>str;
+    //grammar
     map<char,set<string>> productions;
     productions['E'] = {"TD"};
     productions['D'] = {"+TD","$"};
@@ -202,5 +208,5 @@ int main(){
     productions['F'] = {"(E)","i"};
     int curr=0;
     bool ok = E(productions,str,curr);
-    ok? cout<<"syntactically valid\n":cout<<"syntactically invalid\n"<<endl;
+    (ok)? cout<<"syntactically valid\n":cout<<"syntactically invalid\n"<<endl;
 }
