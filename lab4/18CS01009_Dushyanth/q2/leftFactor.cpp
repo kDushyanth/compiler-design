@@ -2,9 +2,11 @@
 using namespace std;
 
 //cd lab4/18CS01009_dushyanth/q2
+//checks whether ith character in string-'a' is Terminal or not
 bool isTerminal(const string &a,int i){
     return a[i]>='a' && a[i]<='z';
 }
+//function to determine longest common prefix of two strings
 int lp(const string &a,const string &b){
     int i=0;int j=0;
     int len=0;
@@ -13,6 +15,7 @@ int lp(const string &a,const string &b){
     }
     return len;
 }
+//pretty print the grammar
 void print(map<char,vector<string>> productions){
     cout<<"--------start-------"<<endl;
     for(auto itr = productions.begin();itr!=productions.end();itr++){
@@ -37,7 +40,9 @@ void leftFactor(map<char,vector<string>> &productions,map<char,vector<string>> &
         auto itr = productions.begin();
         vector<string> temp;
         vector<string> curr = (itr->second);
+        //sort the rhs of production
         sort(curr.begin(),curr.end());
+        //find the longest common prefix of length atleast 1
         for(int i=0;i<curr.size();i++){
             int len = curr[i].length();int j=i+1;
             for(j=i+1;j<curr.size();j++){
@@ -67,19 +72,23 @@ void leftFactor(map<char,vector<string>> &productions,map<char,vector<string>> &
                 temp.push_back(curr[i]);
             }
         }
+        //insert the processed production into new grammar
         newProductions[itr->first] = temp;
+        //current production is left factored and hence removed from the grammar
         productions.erase(itr);
     }
 }
 int main(){
+    //input grammar
     map<char,vector<string>> productions;
+    //left factored grammar
     map<char,vector<string>> newProductions;
-    cout<<"Input Format:\n\n"
-          "grammar:\nA->aAB|aBc|aAc\n"
-          "input:\n1\nA 3 aAB aBc aAc\n";
+    cout<<"Input Format:\nNon-terminal must be b/w 'A and Z'\nTerminals must be b/w 'a and z'\nEpsilon is denoted by '$'\n"
+          "grammar:A->aAB|aBc|aAc\n"
+          "corresponding input:\n1\nA 3 aAB aBc aAc\n------------------------------------------------------\n";
     cout<<"enter #productions:";
     int n;cin>>n;
-    cout<<"\nenter productions\n";
+    cout<<"enter productions\n";
     for(int i=0;i<n;i++){
         char lhs;cin>>lhs;
         productions[lhs] = {};

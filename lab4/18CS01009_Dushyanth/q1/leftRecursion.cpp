@@ -2,6 +2,7 @@
 using namespace std;
 int steps = 0;
 //cd lab4/18CS01009_dushyanth/q1
+//pretty print the grammar
 void print(unordered_map<char,vector<string>> productions){
     cout<<"--------start-------"<<endl;
     for(auto itr = productions.begin();itr!=productions.end();itr++){
@@ -15,6 +16,7 @@ void print(unordered_map<char,vector<string>> productions){
     }
     cout<<"---------end--------"<<endl;
 }
+//prints two vectors x1,x2
 void printOKs(vector<string> x1,vector<string> x2){
     for(auto x:x1){
         cout<<x<<"..";
@@ -24,14 +26,14 @@ void printOKs(vector<string> x1,vector<string> x2){
     }cout<<endl;
 }
 int main(){
-
+    //grammar
     unordered_map<char,vector<string>> productions;
-    cout<<"Input Format:\n\n"
+    cout<<"Input Format:\nNon-terminal must be b/w 'A and Z'\nTerminals must be b/w 'a and z'\nEpsilon is denoted by '$'\n"
           "grammar:\nA->A+B|B\nB->B*C|C\nC->(A)|x\n"
-          "input:\n3\nA 2 A+B B\nB 2 B*C C\nC 2 (A) x\n\n";
+          "corresponding input:\n3\nA 2 A+B B\nB 2 B*C C\nC 2 (A) x\n------------------------------------------------------\n";
     cout<<"enter #productions:";
     int n;cin>>n;
-    cout<<"\nenter productions\n";
+    cout<<"enter productions\n";
     for(int i=0;i<n;i++){
         char lhs;cin>>lhs;
         productions[lhs] = {};
@@ -41,6 +43,7 @@ int main(){
             productions[lhs].push_back(rhs);
         } 
     }
+    //grammar without left recursion
     unordered_map<char,vector<string>> newProductions;
     //int xy=0;
     for(auto i = productions.begin();i!=productions.end();i++){  
@@ -97,6 +100,6 @@ int main(){
          //print(newProductions);
          //print(productions);
     }
-    cout<<"OUTPUT\n";
+    cout<<"OUTPUT:\n";
     print(newProductions);
 }
