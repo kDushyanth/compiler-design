@@ -10,7 +10,7 @@ bool isTerminal(const string &a,int i){
 int lp(const string &a,const string &b){
     int i=0;int j=0;
     int len=0;
-    while(i<a.length() && j<b.length() && isTerminal(a,i) && isTerminal(b,j) && a[i]==b[j]){
+    while(i<a.length() && j<b.length() /*&& isTerminal(a,i) && isTerminal(b,j)*/ && a[i]==b[j]){
         i++;j++;len++;
     }
     return len;
