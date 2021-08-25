@@ -208,5 +208,5 @@ int main(){
     productions['F'] = {"(E)","i"};
     int curr=0;
     bool ok = E(productions,str,curr);
-    (ok)? cout<<"syntactically valid\n":cout<<"syntactically invalid\n"<<endl;
+    (ok && curr==str.length())? cout<<"syntactically valid\n":cout<<"syntactically invalid\n"<<endl;
 }
