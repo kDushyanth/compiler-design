@@ -13,7 +13,10 @@ class Grammar{
         unordered_map<string,int> T_idx;
     public:
     Grammar(){
-        ifstream infile( "GrammarLL.txt" );
+        string gfile="grammarll1.txt";
+        //cout<<"enter file that contains grammar"<<endl;
+        //cin>>gfile;
+        ifstream infile(gfile);
         string str;
         infile>>str;
         num_N = stoi(str);
@@ -80,7 +83,11 @@ class Grammar{
             cout<<x.first<<" "<<x.second<<endl;
         }
         cout<<"First--------------------"<<endl;
-        ifstream infile2("First-Follow.txt");
+        //string gfile;
+        //cout<<"enter file that contains first and follow sets"<<endl;
+        //cin>>gfile;
+        gfile = "first-follow1.txt";
+        ifstream infile2(gfile);
         for(int i=0;i<num_N;i++){
            string A;
            infile2>>A;
@@ -125,16 +132,47 @@ class Parser :public Grammar{
     private:
     vector<vector<pair<string,vector<string>>>> parsingTable;
     int curr;
-    stack<char> s;
+    stack<string> s;
     public:
     Parser(){
-        Grammar();
         curr=0;
-        s.push('$');
+        s.push("$");
         parsingTable = vector<vector<pair<string,vector<string>>>>(num_N,vector<pair<string,vector<string>>>( num_T+1));
     }
-    void parse(string input){
-        input+="$";
+    void parse(vector<string> input){
+        input.push_back("$");
+        s.push(idx_N[0]);
+        //cout<<(idx_N[0]);
+        cout<<"actions\n";
+        while(s.top()!="$"){
+            //cout<<(s.top())<<"\t\t"<<input[curr]<<endl;
+            if(T_idx.find(s.top())==T_idx.end()){
+                if(parsingTable[N_idx[s.top()]][T_idx[input[curr]]].first==""){
+                    cout<<"incorrect syntax"<<endl;
+                    break;
+                }else{
+                    vector<string> vec = parsingTable[N_idx[s.top()]][T_idx[input[curr]]].second;
+                    cout<<s.top()<<"->";
+                    for(auto x:vec){
+                        cout<<x;
+                    }cout<<endl;
+                    
+                    s.pop();
+                    for(auto itr = vec.rbegin();itr!=vec.rend();itr++){
+                        if(*itr!="#")s.push(*itr);
+                    }
+
+                }      
+            }else if(s.top()==input[curr]){
+                    cout<<"match "<<(s.top())<<endl;
+                    s.pop();
+                    curr++;
+            }else{
+                cout<<"incorrect syntax"<<endl;
+                break;
+            }
+        }
+        if(s.top()=="$" && input[curr]=="$")cout<<"success"<<endl;
     }
     unordered_set<string> getAll(string lhs,vector<string> RHS){
         unordered_set<string> result;
@@ -205,8 +243,19 @@ class Parser :public Grammar{
     }
 
 };
+vector<string> myReader(string fname){
+    vector<string> tkns;
+    ifstream infile(fname);
+    string str;
+    while(getline(infile,str)){
+        tkns.push_back(str);
+    }
+    return tkns;
+}
 int main(){
     Parser p;
     p.create();
     p.print();
+    //vector<string> tokens;
+    p.parse(myReader("tkn.txt"));
 }
