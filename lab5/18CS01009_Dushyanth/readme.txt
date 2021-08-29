@@ -51,3 +51,4 @@ Grammar-2
     input-1,output-1: the parser successfully parsed the program
     input-2,output-2: invalid token due to "str"+"str" in 6th line of program
 
+left factoring, removing left recursion and computing first and follow sets is done manually

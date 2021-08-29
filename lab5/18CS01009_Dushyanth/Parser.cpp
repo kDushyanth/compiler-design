@@ -13,6 +13,7 @@ class Grammar{
         unordered_map<string,int> T_idx;
     public:
     Grammar(){
+        //read grammar file and store productions in datastructure
         string gfile/*="grammarll2.txt"*/;
         cout<<"enter file that contains grammar"<<endl;
         cin>>gfile;
@@ -86,6 +87,7 @@ class Grammar{
         }
         
         //string gfile;
+        // read file and store first and follow sets in datastructure
         cout<<"enter file that contains first and follow sets"<<endl;
         cin>>gfile;
         //gfile = "firstfollow2.txt";
@@ -197,6 +199,7 @@ class Parser :public Grammar{
         }
         if(s.top()=="$" && input[curr]=="$")cout<<"success"<<endl;
     }
+    //does the 2nd step of parsing table filling algorithm
     unordered_set<string> getAll(string lhs,vector<string> RHS){
         unordered_set<string> result;
         bool isEnd=true;
@@ -223,6 +226,7 @@ class Parser :public Grammar{
             cout<<" ";
         }
     }
+    //fill the parsing table
     void create(){
         for(int i=0;i<num_N;i++){
             string A = productions[i].first;
@@ -235,6 +239,7 @@ class Parser :public Grammar{
             }
         }
     }
+    //print parsing table
     void print(){
         cout<<"Parsing Table:"<<endl;
         vector<int> width(num_T+1,INT_MIN);
@@ -246,9 +251,7 @@ class Parser :public Grammar{
         for(auto p:N_idx){
             width[0] = max(width[0],(int)p.first.size());
         }
-        /*for(int i=0;i<num_T+1;i++){
-            cout<<width[i]<<".";
-        }cout<<endl;*/
+        
         printSpace(width[0]);
         for(int j=0;j<num_T+1;j++){
                     cout<<(idx_T[j]);printSpace(width[j+1]-(idx_T[j].length())+3);
@@ -272,6 +275,7 @@ class Parser :public Grammar{
     }
 
 };
+//read tokens from a file
 vector<string> myReader(string fname){
     vector<string> tkns;
     ifstream infile(fname);
