@@ -145,7 +145,7 @@ class Parser :public Grammar{
     Parser(){
         curr=0;
         s.push("$");
-        parsingTable = vector<vector<pair<string,vector<string>>>>(num_N,vector<pair<string,vector<string>>>( num_T+1));
+        parsingTable = vector<vector<pair<string,vector<string>>>>(num_N,vector<pair<string,vector<string>>>( num_T+1,{"",{}}));
     }
     void printStack(stack<string> s){
         if(s.empty())return;
@@ -239,34 +239,43 @@ class Parser :public Grammar{
             }
         }
     }
+    int getWidth(vector<string> str){
+        int w = 0;
+        for(string x: str){
+            w+=x.length();
+        }
+        return w;
+    }
     //print parsing table
     void print(){
         cout<<"Parsing Table:"<<endl;
-        vector<int> width(num_T+1,INT_MIN);
+        vector<int> width(num_T+2,INT_MIN);
         for(int i=0;i<num_N;i++){
             for(int j=0;j<num_T+1;j++){
-                width[j+1] = max(width[j+1],(int) (parsingTable[i][j].first.length()+2+parsingTable[i][j].second.size()));
+                width[j+1] = max(width[j+1],(int) (parsingTable[i][j].first.length()+2+getWidth(parsingTable[i][j].second)));
             }
         }
         for(auto p:N_idx){
             width[0] = max(width[0],(int)p.first.size());
         }
-        
-        printSpace(width[0]);
+        for(int i=0;i<num_T+2;i++){
+            cout<<width[i]<<".";
+        }cout<<endl;
+        printSpace(width[0]+3);
         for(int j=0;j<num_T+1;j++){
                     cout<<(idx_T[j]);printSpace(width[j+1]-(idx_T[j].length())+3);
         }cout<<endl;
         for(int i=0;i<num_N;i++){
-            cout<<(idx_N[i])<<"\t";
+            cout<<(idx_N[i]);printSpace(width[0]-(idx_N[i].length())+3);
             for(int j=0;j<num_T+1;j++)
             {
                 //cout<<width[j]<<"[]"<<(width[j] - parsingTable[i][j].first.length()+parsingTable[i][j].second.size()+2)<<endl;
-                if(parsingTable[i][j].first.length()+2+parsingTable[i][j].second.size()>2){
+                if(parsingTable[i][j].first.length()+2+getWidth(parsingTable[i][j].second)>2){
                         cout<<parsingTable[i][j].first<<"->";
                         for(int k=0;k<parsingTable[i][j].second.size();k++){
                             cout<<parsingTable[i][j].second[k];
                         }//cout<<"\t";
-                        printSpace(width[j+1] - (parsingTable[i][j].first.length()+parsingTable[i][j].second.size()+2)+3);
+                        printSpace(width[j+1] - (parsingTable[i][j].first.length()+getWidth(parsingTable[i][j].second)+2)+3);
                 }else{
                     printSpace(width[j+1]+3);
                 }
