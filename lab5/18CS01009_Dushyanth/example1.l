@@ -5,7 +5,7 @@ id      {letter}+
 "*"     {printf("*\n");return 1;}
 "("     {printf("(\n");return 1;}
 ")"     {printf(")\n");return 1;}
-{id}    {printf("x\n");return 1;}
+{id}    {printf("id\n");return 1;}
 .       {printf("rejected\n");return 0;}
 %%
 int yywrap(void){return 1;}

@@ -86,7 +86,7 @@ class Grammar{
         //string gfile;
         //cout<<"enter file that contains first and follow sets"<<endl;
         //cin>>gfile;
-        gfile = "first-follow1.txt";
+        gfile = "firstfollow1.txt";
         ifstream infile2(gfile);
         for(int i=0;i<num_N;i++){
            string A;

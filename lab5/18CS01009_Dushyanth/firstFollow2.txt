@@ -1,0 +1,83 @@
+P 1 $
+DL 6 id if while print scan end
+D 8 int float id if while print scan end
+TY 1 id
+VL 1 ;
+VL' 1 ;
+SL 2 end else
+S 7 id if while print scan end else
+ES 7 id if while print scan end else
+IS 7 id if while print scan end else
+IS' 7 id if while print scan end else
+WS 7 id if while print scan end else
+IOS 7 id if while print scan end else
+PE 7 id if while print scan end else
+BE 3 then do }
+BE' 3 then do }
+AE 4 or then do }
+AE' 4 or then do }
+NE 5 and or then do }
+RE 5 and or then do }
+RE' 5 and or then do }
+E 17 ; id if while print scan end else = > < and or then do } )
+E' 17 ; id if while print scan end else = > < and or then do } )
+T 19 ; id if while print scan end else = > < and or then do } ) + -
+T' 19 ; id if while print scan end else = > < and or then do } ) + -
+F 21 ; id if while print scan end else = > < and or then do } ) + - * /
+P 1 prog
+DL 3 int float #
+D 2 int float
+TY 2 int float
+VL 1 id
+VL' 2 id #
+SL 6 id if while print scan #
+S 5 id if while print scan
+ES 1 id
+IS 1 if
+IS' 2 end else
+WS 1 while
+IOS 2 print scan
+PE 5 ( id fc ic str
+BE 6 not { ( id fc ic
+BE' 2 # or
+AE 6 not { ( id fc ic
+AE' 2 and #
+NE 6 not { ( id fc ic
+RE 4 ( id fc ic
+RE' 3 = > <
+E 4 ( id fc ic
+E' 3 + - #
+T 4 ( id fc ic
+T' 3 * / #
+F 4 ( id ic fc
++ 1 +
+* 1 *
+/ 1 /
+- 1 -
+= 1 =
+< 1 <
+> 1 >
+( 1 (
+) 1 )
+{ 1 {
+} 1 }
+:= 1 :=
+; 1 ;
+and 1 and
+else 1 else
+end 1 end
+ic 1 ic
+id 1 id
+if 1 if
+int 1 int
+do 1 do
+fc 1 fc
+float 1 float
+not 1 not
+or 1 or
+print 1 print
+prog 1 prog
+scan 1 scan
+str 1 str
+then 1 then 
+while 1 while
