@@ -13,9 +13,9 @@ class Grammar{
         unordered_map<string,int> T_idx;
     public:
     Grammar(){
-        string gfile="grammarll1.txt";
-        //cout<<"enter file that contains grammar"<<endl;
-        //cin>>gfile;
+        string gfile/*="grammarll2.txt"*/;
+        cout<<"enter file that contains grammar"<<endl;
+        cin>>gfile;
         ifstream infile(gfile);
         string str;
         infile>>str;
@@ -37,6 +37,7 @@ class Grammar{
         //T_idx["#"] = num_T+1;
         //idx_T[num_T+1] = "#";
         for(int i=0;i<num_N;i++){
+            //cout<<i<<endl;
             infile>>str;
             pair<string,set<vector<string>>> p;
             //cout<<(str)<<endl;
@@ -57,6 +58,7 @@ class Grammar{
             }
             productions.push_back(p);
         }
+        
         cout<<"productions--------------------"<<endl;
         for(int i=0;i<num_N;i++){
             cout<<productions[i].first<<"->";
@@ -82,11 +84,11 @@ class Grammar{
         for(auto x: N_idx){
             cout<<x.first<<" "<<x.second<<endl;
         }
-        cout<<"First--------------------"<<endl;
+        
         //string gfile;
-        //cout<<"enter file that contains first and follow sets"<<endl;
-        //cin>>gfile;
-        gfile = "firstfollow1.txt";
+        cout<<"enter file that contains first and follow sets"<<endl;
+        cin>>gfile;
+        //gfile = "firstfollow2.txt";
         ifstream infile2(gfile);
         for(int i=0;i<num_N;i++){
            string A;
@@ -112,6 +114,8 @@ class Grammar{
                firstSets[A].insert(str);
            }
         }
+        
+        cout<<"First--------------------"<<endl;
         for(auto x: firstSets){
             cout<<x.first<<" ";
             for(auto y:x.second){
@@ -126,8 +130,10 @@ class Grammar{
             }cout<<endl;
         }
         cout<<"--------------------"<<endl;
+        
     }    
 };
+
 class Parser :public Grammar{
     private:
     vector<vector<pair<string,vector<string>>>> parsingTable;
@@ -139,11 +145,24 @@ class Parser :public Grammar{
         s.push("$");
         parsingTable = vector<vector<pair<string,vector<string>>>>(num_N,vector<pair<string,vector<string>>>( num_T+1));
     }
+    void printStack(stack<string> s){
+        if(s.empty())return;
+        cout<<(s.top());
+        string str = s.top();
+        s.pop();
+        printStack(s);
+        s.push(str);
+    }
+    void printInput(vector<string> ip,int curr){
+        for(int i=curr;i<ip.size();i++){
+            cout<<ip[i];
+        }
+    }
     void parse(vector<string> input){
         input.push_back("$");
         s.push(idx_N[0]);
         //cout<<(idx_N[0]);
-        cout<<"actions\n";
+        cout<<"stack \t\t\t input \t\t\t actions\n";
         while(s.top()!="$"){
             //cout<<(s.top())<<"\t\t"<<input[curr]<<endl;
             if(T_idx.find(s.top())==T_idx.end()){
@@ -152,6 +171,8 @@ class Parser :public Grammar{
                     break;
                 }else{
                     vector<string> vec = parsingTable[N_idx[s.top()]][T_idx[input[curr]]].second;
+                    printStack(s);cout<<"\t\t\t";
+                    printInput(vec,curr);cout<<"\t\t\t";
                     cout<<s.top()<<"->";
                     for(auto x:vec){
                         cout<<x;
@@ -164,6 +185,8 @@ class Parser :public Grammar{
 
                 }      
             }else if(s.top()==input[curr]){
+                    printStack(s);cout<<"\t\t\t";
+                    printInput(input,curr);cout<<"\t\t\t";
                     cout<<"match "<<(s.top())<<endl;
                     s.pop();
                     curr++;
@@ -213,16 +236,22 @@ class Parser :public Grammar{
         }
     }
     void print(){
-        vector<int> width(num_T,INT_MIN);
+        cout<<"Parsing Table:"<<endl;
+        vector<int> width(num_T+1,INT_MIN);
         for(int i=0;i<num_N;i++){
             for(int j=0;j<num_T+1;j++){
-                width[j] = max(width[j],(int) (parsingTable[i][j].first.length()+2+parsingTable[i][j].second.size()));
+                width[j+1] = max(width[j+1],(int) (parsingTable[i][j].first.length()+2+parsingTable[i][j].second.size()));
             }
         }
-        
-        cout<<"\t";
+        for(auto p:N_idx){
+            width[0] = max(width[0],(int)p.first.size());
+        }
+        /*for(int i=0;i<num_T+1;i++){
+            cout<<width[i]<<".";
+        }cout<<endl;*/
+        printSpace(width[0]);
         for(int j=0;j<num_T+1;j++){
-                    cout<<(idx_T[j]);printSpace(width[j]-(idx_T[j].length())+3);
+                    cout<<(idx_T[j]);printSpace(width[j+1]-(idx_T[j].length())+3);
         }cout<<endl;
         for(int i=0;i<num_N;i++){
             cout<<(idx_N[i])<<"\t";
@@ -234,9 +263,9 @@ class Parser :public Grammar{
                         for(int k=0;k<parsingTable[i][j].second.size();k++){
                             cout<<parsingTable[i][j].second[k];
                         }//cout<<"\t";
-                        printSpace(width[j] - (parsingTable[i][j].first.length()+parsingTable[i][j].second.size()+2)+3);
+                        printSpace(width[j+1] - (parsingTable[i][j].first.length()+parsingTable[i][j].second.size()+2)+3);
                 }else{
-                    printSpace(width[j]+3);
+                    printSpace(width[j+1]+3);
                 }
             }cout<<endl;
         }

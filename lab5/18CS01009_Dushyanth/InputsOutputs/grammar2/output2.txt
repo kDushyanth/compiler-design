@@ -1,0 +1,302 @@
+enter file that contains grammar
+grammarll2.txt
+productions--------------------
+P->progDLSLend|
+DL->#|DDL|
+D->TYVL;|
+TY->float|int|
+VL->idVL'|
+VL'->#|VL|
+SL->#|SSL|
+S->ES|IOS|IS|WS|
+ES->id:=E;|     
+IS->ifBEthenSLIS'|
+IS'->elseSLend|end|
+WS->whileBEdoSLend|
+IOS->printPE|scanid|
+PE->E|str|
+BE->AEBE'|
+BE'->#|orAEBE'|
+AE->NEAE'|
+AE'->#|andNEAE'|
+NE->RE|notNE|{BE}|
+RE->ERE'|
+RE'-><E|=E|>E|
+E->TE'|
+E'->#|+TE'|-TE'|
+T->FT'|
+T'->#|*FT'|/FT'|
+F->(E)|fc|ic|id|
+idx2T--------------------
+31 $
+30 while
+29 then
+28 str
+27 scan
+26 prog
+25 print
+24 or
+23 not
+22 float
+21 fc
+20 do
+19 int
+18 if
+17 id
+16 ic
+5 <
+4 =
+3 /
+2 -
+0 +
+1 *
+6 >
+7 (
+8 )
+9 {
+10 }
+11 :=
+12 ;
+13 and
+14 else
+15 end
+idx2N--------------------
+25 F
+24 T'
+23 T
+22 E'
+21 E
+20 RE'
+19 RE
+18 NE
+17 AE'
+16 AE
+5 VL'
+4 VL
+3 TY
+2 D
+0 P
+1 DL
+6 SL
+7 S
+8 ES
+9 IS
+10 IS'
+11 WS
+12 IOS
+13 PE
+14 BE
+15 BE'
+T2idx--------------------
+$ 31
+then 29
+str 28
+print 25
+not 23
+float 22
+fc 21
+if 18
+ic 16
+do 20
+= 4
+> 6
+/ 3
+( 7
+} 10
+while 30
+id 17
+< 5
+prog 26
+:= 11
+- 2
+int 19
++ 0
+scan 27
+* 1
+) 8
+{ 9
+; 12
+and 13
+or 24
+else 14
+end 15
+N2idx--------------------
+F 25
+T' 24
+E' 22
+E 21
+AE 16
+VL 4
+TY 3
+BE' 15
+D 2
+P 0
+WS 11
+T 23
+IOS 12
+VL' 5
+IS' 10
+RE 19
+SL 6
+NE 18
+BE 14
+RE' 20
+DL 1
+S 7
+PE 13
+AE' 17
+ES 8
+IS 9
+enter file that contains first and follow sets
+firstfollow2.txt
+First--------------------
+then then
+scan scan
+prog prog
+or or
+not not
+float float
+fc fc
+int int
+if if
+id id
+ic ic
+end end
+else else
+; ;
+} }
+ES id
+AE' # and
+PE str ic fc ( id
+S print scan while id if
+DL # int float
+BE fc ( id not ic {
+NE fc ( id not ic {
+SL # print scan while id if
+RE ic fc ( id 
+while while
+IS' else end
+< <
+IOS scan print
+T ic fc ( id
+WS while
+/ /
+and and
+VL' # id
+P prog
+BE' or #
+TY float int
+> >
+AE fc ( id not ic {
+{ {
+RE' < = >
+E ic fc ( id
+VL id 
+E' # + -
+T' # * /
+F fc ic ( id
++ +
+str str
+IS if
+= =
+* *
+do do
+- -
+# #
+print print
+:= :=
+D float int
+( (
+) )
+Follow--------------------
+F / - + ) print * scan if ; or else end do = > while id < and then } 
+T' - + ) print scan if ; or else end do = > while id < and then }
+E' ) print scan if ; or else end do = > while id < and then }
+E ) print scan if ; or else end do = > while id < and then }
+AE } do or then
+VL ;
+TY id
+BE' then } do 
+D end scan float while int print id if
+P $
+WS if id while else scan print end
+T - + ) print scan if ; or else end do = > while id < and then }
+IOS if id while else scan print end
+VL' ;
+IS' if id while else scan print end 
+RE } do then and or
+SL else end
+NE } do then and or
+BE then } do
+RE' } do then and or
+DL end print scan while id if
+S if id while else scan print end
+PE if id while else scan print end
+AE' } do or then
+ES if id while else scan print end
+IS if id while else scan print end 
+--------------------
+Parsing Table:
+   +         *         -         /         =         <         >         (        )       {         }        :=   ;        and        else       end      ic       id         if          int      do       fc       float    not      or         print     prog      scan      str     then     while       $    
+P                                                                                P->progDLSLend
+DL                                                                                                                                                    DL->#             DL->#      DL->#       DL->DDL                     DL->DDL                       DL->#               DL->#                      DL->#
+D              D->TYVL;                     D->TYVL;
+TY              TY->int                      TY->float
+VL                                                                                                                                                                      VL->idVL'
+VL'                                                                                                                    VL'->#                                           VL'->VL  
+SL                                                                                                                                         SL->#      SL->#             SL->SSL     SL->SSL                                                              SL->SSL              SL->SSL                     SL->SSL
+S                                                                                                                                                                       S->ES       S->IS                                                                S->IOS                S->IOS                       S->WS
+ES                                                                                                                                                                      ES->id:=E;
+IS  IS->ifBEthenSLIS'
+IS'                                                                                                                                        IS'->elseSLend   IS'->end
+WS                                                                                                                     WS->whileBEdoSLend
+IOS                                                                      IOS->printPE             IOS->scanid                                     
+PE                                                                            PE->E                                                                            PE->E    PE->E                                    PE->E                                                               PE->str
+BE                                                                            BE->AEBE'           BE->AEBE'                                                          BE->AEBE'   BE->AEBE'                                   BE->AEBE'            BE->AEBE'
+BE'                                                                                                      BE'->#                       BE'->#                              BE'->orAEBE'                                         BE'->#
+AE                                                                            AE->NEAE'           AE->NEAE'                                                          AE->NEAE'   AE->NEAE'                                   AE->NEAE'            AE->NEAE'
+AE'                                                                                                      AE'->#                 AE'->andNEAE'                            AE'->#                              AE'->#                                           AE'->#
+NE                                                                            NE->RE            NE->{BE}                                                         NE->RE    NE->RE                                    NE->RE             NE->notNE
+RE                                                                            RE->ERE'                                                                           RE->ERE'   RE->ERE'                                   RE->ERE'
+RE'                                             RE'->=E   RE'-><E   RE'->>E
+E                                                                             E->TE'                                                                            E->TE'    E->TE'                                    E->TE'
+E'      E'->+TE'             E'->-TE'             E'->#     E'->#     E'->#              E'->#             E'->#         E'->#    E'->#      E'->#      E'->#             E'->#      E'->#                E'->#                               E'->#      E'->#               E'->#             E'->#    E'->#
+T                                                                             T->FT'                                                                            T->FT'    T->FT'                                    T->FT'
+T'      T'->#     T'->*FT'   T'->#     T'->/FT'   T'->#     T'->#     T'->#              T'->#             T'->#         T'->#    T'->#      T'->#      T'->#             T'->#      T'->#                T'->#                               T'->#      T'->#               T'->#             T'->#    T'->#
+F                                                                             F->(E)                                                                           F->ic     F->id                                     F->fc                                                                                                  
+stack                    input                   actions
+P$                      progDLSLend                     P->progDLSLend
+progDLSLend$                    progintid;intid;intid;intid;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                   match prog
+DLSLend$                        DL                      DL->DDL
+DDLSLend$                       VL;                     D->TYVL;
+TYVL;DLSLend$                                           TY->int
+intVL;DLSLend$                  intid;intid;intid;intid;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                       match int
+VL;DLSLend$                                             VL->idVL'
+idVL';DLSLend$                  id;intid;intid;intid;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                  match id
+VL';DLSLend$                                            VL'->#
+;DLSLend$                       ;intid;intid;intid;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                    match ;
+DLSLend$                                                DL->DDL
+DDLSLend$                                               D->TYVL;
+TYVL;DLSLend$                                           TY->int
+intVL;DLSLend$                  intid;intid;intid;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                     match int
+VL;DLSLend$                                             VL->idVL'
+idVL';DLSLend$                  id;intid;intid;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                        match id
+VL';DLSLend$                                            VL'->#
+;DLSLend$                       ;intid;intid;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                  match ;
+DLSLend$                                                DL->DDL
+DDLSLend$                                               D->TYVL;
+TYVL;DLSLend$                                           TY->int
+intVL;DLSLend$                  intid;intid;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                   match int
+VL;DLSLend$                                             VL->idVL'
+idVL';DLSLend$                  id;intid;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                      match id
+VL';DLSLend$                                            VL'->#
+;DLSLend$                       ;intid;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                        match ;
+DLSLend$                                                DL->DDL
+DDLSLend$                                               D->TYVL;
+TYVL;DLSLend$                                           TY->int
+intVL;DLSLend$                  intid;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                 match int
+VL;DLSLend$                                             VL->idVL'
+idVL';DLSLend$                  id;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                    match id
+VL';DLSLend$                                            VL'->#
+;DLSLend$                       ;str+strid:=ic;id:=ic;scanidprintidifid=icthenid:=ic;elseifid<icthenid:=fc;endwhileid>fcdoid:=id-ic;endendwhileid>icdoid:=id+ic;id:=fc;ifid=icthenid:=ic;endendend$                      match ;
+incorrect syntax

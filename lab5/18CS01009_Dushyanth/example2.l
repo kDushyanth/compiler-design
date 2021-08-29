@@ -44,7 +44,7 @@ sep        [ \t\n]+
 %%
 int yywrap(void){return 1;}
 int main(){
-    yyin = fopen("input2.txt","r");
+    yyin = fopen("input.txt","r");
     while(yylex()){
 
     }

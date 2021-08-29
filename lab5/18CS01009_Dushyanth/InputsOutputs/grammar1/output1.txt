@@ -1,0 +1,106 @@
+enter file that contains grammar
+grammarll1.txt
+productions--------------------
+E->TE'|
+E'->#|+TE'|
+T->FT'|
+T'->#|*FT'|
+F->(E)|id|
+idx2T--------------------
+5 $
+4 )
+3 (
+2 *
+0 id
+1 +
+idx2N--------------------
+4 F
+3 T'
+2 T
+0 E
+1 E'
+T2idx--------------------
+) 4
+( 3
+$ 5
+* 2
+id 0
++ 1
+N2idx--------------------
+F 4
+T' 3
+T 2
+E 0
+E' 1
+enter file that contains first and follow sets
+firstfollow1.txt
+First--------------------
+id id
++ +
+# #
+) )
+E' # +
+E ( id
+( (
+* *
+T ( id
+T' # *
+F ( id
+Follow--------------------
+F ) $ * +
+T' + $ ) 
+T + $ )
+E ) $
+E' ) $
+--------------------
+Parsing Table:
+          id      +         *         (        )       $
+E       E->TE'                       E->TE'
+E'              E'->+TE'                      E'->#   E'->#   
+T       T->FT'                       T->FT'
+T'              T'->#     T'->*FT'            T'->#   T'->#
+F       F->id                        F->(E)
+stack                    input                   actions
+E$                      TE'                     E->TE'
+TE'$                    FT'                     T->FT'
+FT'E'$                  (E)                     F->(E)
+(E)T'E'$                        (id+id)*(id+id)+id$                     match (
+E)T'E'$                 E'                      E->TE'
+TE')T'E'$                       T'                      T->FT'
+FT'E')T'E'$                                             F->id
+idT'E')T'E'$                    id+id)*(id+id)+id$                      match id
+T'E')T'E'$                                              T'->#
+E')T'E'$                        E'                      E'->+TE'
++TE')T'E'$                      +id)*(id+id)+id$                        match +
+TE')T'E'$                                               T->FT'
+FT'E')T'E'$                                             F->id
+idT'E')T'E'$                    id)*(id+id)+id$                 match id
+T'E')T'E'$                                              T'->#
+E')T'E'$                                                E'->#
+)T'E'$                  )*(id+id)+id$                   match )
+T'E'$                                           T'->*FT'
+*FT'E'$                 *(id+id)+id$                    match *
+FT'E'$                                          F->(E)
+(E)T'E'$                        (id+id)+id$                     match (
+E)T'E'$                                         E->TE'
+TE')T'E'$                                               T->FT'
+FT'E')T'E'$                                             F->id
+idT'E')T'E'$                    id+id)+id$                      match id
+T'E')T'E'$                                              T'->#
+E')T'E'$                                                E'->+TE'
++TE')T'E'$                      +id)+id$                        match +
+TE')T'E'$                                               T->FT'
+FT'E')T'E'$                                             F->id
+idT'E')T'E'$                    id)+id$                 match id
+T'E')T'E'$                                              T'->#
+E')T'E'$                                                E'->#
+)T'E'$                  )+id$                   match )
+T'E'$                                           T'->#
+E'$                                             E'->+TE'
++TE'$                   +id$                    match +
+TE'$                                            T->FT'
+FT'E'$                                          F->id
+idT'E'$                 id$                     match id
+T'E'$                                           T'->#
+E'$                                             E'->#
+success

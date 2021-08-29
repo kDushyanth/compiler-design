@@ -79,7 +79,7 @@ NE 3 2 not NE 3 { BE } 1 RE
 RE 1 2 E RE'
 RE' 3 2 = E 2 < E 2 > E
 E 1 2 T E'
-E' 3 3 + T E ' 3 - T E ' 1 #
+E' 3 3 + T E' 3 - T E' 1 #
 T 1 2 F T'
 T' 3 3 * F T' 3 / F T' 1 #
-F 4 3 ( id ) 1 id 1 fc 1 ic
+F 4 3 ( E ) 1 id 1 fc 1 ic

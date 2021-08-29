@@ -13,7 +13,7 @@ void writer(char ch[]){
     printf("(%c)\n",&ch);
 }
 int main(){
-    yyin = fopen("input1.txt","r");
+    yyin = fopen("input.txt","r");
     int tkn;
     while((tkn= yylex())){
         //printf("..%d..\n",tkn);

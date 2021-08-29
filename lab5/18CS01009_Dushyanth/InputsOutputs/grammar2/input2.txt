@@ -3,13 +3,12 @@ prog
             int j;
             int sum;
             int count;
-            
+            "str"+"str"
             sum:=0;
             count:=5;
  
             scan count      
             print sum
-            "my" + "u"
             if count=3
             then sum:=2;
             else

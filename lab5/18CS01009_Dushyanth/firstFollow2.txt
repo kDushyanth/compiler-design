@@ -79,5 +79,6 @@ print 1 print
 prog 1 prog
 scan 1 scan
 str 1 str
-then 1 then 
+then 1 then
 while 1 while
+# 1 #
